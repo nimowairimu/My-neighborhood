@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.db import models
 from cloudinary.models import CloudinaryField
+from django.utils import timezone
 
 class Profile(models.Model):
     profilephoto = CloudinaryField('profile photo')
@@ -24,7 +25,7 @@ class NeighbourHood(models.Model):
 class Post(models.Model):
     title = models.CharField(max_length=120, null=True)
     post = models.TextField()
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='post_owner')
     hood = models.ForeignKey(NeighbourHood, on_delete=models.CASCADE, related_name='hood_post')
 

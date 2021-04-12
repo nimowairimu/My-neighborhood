@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Profile,NeighbourHood
+from .models import Profile,NeighbourHood,Post
 from cloudinary.models import CloudinaryField
 
 class profileForm(forms.ModelForm):
