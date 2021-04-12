@@ -1,21 +1,26 @@
 {% extends 'base.html' %}
-
-{% block content %}
-<div class="container ">
-    <div class="row">
-        <div class="col-md-3"></div>
-        <div class="col-md-6 mt-4 bg-white prof mr-2 ml-2">
-            <img class="rounded-circle account-img d-block mx-auto" src="{{ user.profile.profile_picture.url }}"height="125px" width="125px">
-            <h5 class="text-center mt-3">{{user.username}}</h5>
-            <p class="text-center"> {{user.email}}</p>
-            {% if request.user.profile.neighbourhood %}
-            <p class="text-center">My Hood <a class="btn btn-sm btn-info" href="{% url 'single-hood' user.profile.neighbourhood.id %}">{{ user.profile.neighbourhood.name }}</a>
-            </p>
-            {% endif %}
+{%block content%}
+<div class="col-sm-6 m-auto " style="font-family: 'Domine';">
+    <div class=" content-section container" style="padding-top: 100px;">
+    <div class="media">
+        <div class="col-sm-4">
+            <div style="width: 150px; height:150px; overflow:hidden; border-radius:50%" class="img-wrapper">
+                <img width="120%" height="120%" src="{{user.profile.profilephoto.url }}" alt="profile">
+            </div>
         </div>
-        <div class="col-md-3"></div>
-    </div>
+        <div class="media-body">
+            <h2 class="account-heading">{{user.username}}</h2>
+            <p class="text-secondary">{{user.email}}</p>
+            <p>{{user.profile.Bio}}</p>
+            </div>
+            <hr>
 
+            
+            
+        </div>
+    </div>
+</div>
+</div>
 
 </div>
-{% endblock %}
+{%endblock content%}

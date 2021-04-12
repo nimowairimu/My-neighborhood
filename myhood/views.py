@@ -1,4 +1,4 @@
-from .forms import profileForm,RegistrationForm,UserUpdateForm
+from .forms import profileForm,RegistrationForm,UpdateProfileForm,NeighbourHoodForm,PostForm,UserUpdateForm
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate
@@ -44,6 +44,32 @@ def hoods(request):
     return render(request, 'all_hoods.html', params)
 
 @login_required(login_url='/accounts/login/')    
+# def profile(request):
+#     if request.method == 'POST':
+
+#         userForm = UserUpdateForm(request.POST, instance=request.user)
+#         profile_form = profileForm(
+#             request.POST, request.FILES, instance=request.user)
+
+#         if  profile_form.is_valid():
+#             user_form.save()
+#             profile_form.save()
+
+#             return redirect('home')
+
+#     else:
+        
+#         profile_form = profileForm(instance=request.user)
+#         user_form = UserUpdateForm(instance=request.user)
+
+#         params = {
+#             'user_form':user_form,
+#             'profile_form': profile_form
+
+#         }
+
+#     return render(request, 'profile.html', params)
+@login_required(login_url='/accounts/login/')    
 def profile(request):
     if request.method == 'POST':
 
@@ -70,6 +96,9 @@ def profile(request):
 
     return render(request, 'profile.html', params)
 
+
+
+
 def edit_profile(request, username):
     user = User.objects.get(username=username)
     if request.method == 'POST':
@@ -87,7 +116,7 @@ def create_hood(request):
         form = NeighbourHoodForm(request.POST, request.FILES)
         if form.is_valid():
             hood = form.save(commit=False)
-            hood.admin = request.user.profile
+            # hood.admin = request.user.profile
             hood.save()
             return redirect('hood')
     else:
@@ -120,8 +149,8 @@ def exit_hood(request, id):
     request.user.profile.save()
     return redirect('hood')
 
-def profile(request, username):
-    return render(request, 'profile.html')
+# def profile(request, username):
+#     return render(request, 'profile.html')
 
 
 def edit_profile(request, username):
