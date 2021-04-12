@@ -130,6 +130,13 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+cloudinary.config( 
+  cloud_name = "dbdaabcxr", 
+  api_key = "388228873379869", 
+  api_secret = "7jQEu12De26r0srjbzqrxUJMeMw" 
+)
+
 LOGIN_REDIRECT_URL = 'home'
 
 LOGOUT_REDIRECT_URL = 'login'
