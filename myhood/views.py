@@ -32,4 +32,14 @@ def register(request):
         'form':form,
         'profForm': prof
     }
-    return render(request, 'users/register.html', params) 
+    return render(request, 'users/register.html', params)
+
+
+def hoods(request):
+    all_hoods = NeighbourHood.objects.all()
+    all_hoods = all_hoods[::-1]
+    params = {
+        'all_hoods': all_hoods,
+    }
+    return render(request, 'all_hoods.html', params)
+
