@@ -14,4 +14,8 @@ urlpatterns = [
     path('profile/<username>/edit/', views.edit_profile, name='edit-profile'),
     path('new-hood/', views.create_hood, name='new-hood'),
     path('join_hood/<id>', views.join_hood, name='join-hood'),
+    path('exit_hood/<id>', views.exit_hood, name='exit-hood'),
+    path('<hood_id>/new-post', views.create_post, name='post'),
+    path('<hood_id>/members', views.hood_members, name='members'),
+   
 ]
