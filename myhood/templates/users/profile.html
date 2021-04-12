@@ -1,0 +1,38 @@
+{%extends 'base.html' %}
+{%load crispy_forms_tags%}
+{%block content%}
+{% load cloudinary %}
+<div class="container" style="font-family: 'Domine';">
+
+                {% for proc in profile %}
+                <div class="container">
+                    <div class="row">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <img src="{{profile.profilephoto.url}}" alt="No picture"
+                                    class="rounded-circle border ml-3 mt-2  mr-3" width="55" height="55">
+                            </div>
+                            <div class="col-md-8">
+                                <span><strong><a href="">{{proc.user.username}}</a></strong></span>
+                                <div class="row">
+                                    <div class="col-sm">
+                                        <p>Followers</p>
+                                    </div>
+                                    <div class="col-sm">Following</div>
+                                </div>
+                                <div class="col-md-3 mt-3">
+                                    <button class="btn btn-sm btn-outline-primary">follow</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                {% endfor %}
+           
+       
+   
+</div>
+{%endblock%}
