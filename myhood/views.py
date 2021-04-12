@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from .forms import profileForm,RegistrationForm
 
 def register(request):
     if request.method=="POST":

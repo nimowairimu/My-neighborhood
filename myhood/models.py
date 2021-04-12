@@ -12,4 +12,13 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
+class NeighbourHood(models.Model):
+    name = models.CharField(max_length=50)
+    location = models.CharField(max_length=60)
+    admin = models.ForeignKey("Profile", on_delete=models.CASCADE)
+    description = models.TextField()
+
+    def __str__(self):
+        return self.name
+
 
