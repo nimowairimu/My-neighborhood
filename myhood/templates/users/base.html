@@ -4,6 +4,14 @@
 <html>
 
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-144351462-1"></script>
+  <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144351462-1');
+</script>
     <meta charset="utf-8">
     {% block styles %}
 
@@ -27,7 +35,7 @@
     <title>My-neighborhood</title>
 </head>
 
-<body style="background-image: url('https://images.unsplash.com/photo-1574120582683-1adf79c5dfd5?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=1051&q=80')" style="background-repeat: no-repeat" style="font-family: 'Zilla Slab', serif;"></body>
+<body style="background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKNZYc8tFXpykEZx4NuucLwBgNrimbFAKhjg&usqp=CAU');background-size: cover;background-repeat: no-repeat; font-family:Domine">
     <div class ="container">
     {% block content %}
     {%endblock%}

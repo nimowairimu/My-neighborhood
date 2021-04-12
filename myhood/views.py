@@ -116,7 +116,7 @@ def create_hood(request):
         form = NeighbourHoodForm(request.POST, request.FILES)
         if form.is_valid():
             hood = form.save(commit=False)
-            # hood.admin = request.user.profile
+            hood.admin = request.user.profile
             hood.save()
             return redirect('hood')
     else:
