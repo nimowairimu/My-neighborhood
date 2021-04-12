@@ -7,7 +7,7 @@ class Profile(models.Model):
     profilephoto = CloudinaryField('profile photo')
     Bio = models.CharField(max_length=30)
     user = models.OneToOneField(User,on_delete=models.CASCADE)
-    following = models.ManyToManyField(User,blank=True,related_name='follow')
+    
 
     def __str__(self):
         return self.user.username
