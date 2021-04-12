@@ -1,39 +1,29 @@
-<header class="site-header">
-    <nav class="navbar navbar-expand-md " style="background-color: #C7DA24;">
-        <div class="container">
-            <a class="navbar-brand mr-4" href="{% url 'home' %}" style="font-family:Ultra ;font-size: 30px;">Pixxiegram</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle"
-                aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarToggle">
-                <div class="navbar-nav mr-auto">
-                    <a class="nav-item nav-link" href="{% url 'home' %}"></a>
-                    <a class="nav-item nav-link" href="#"></a>
+            <nav class="navbar navbar-expand-lg navbar-dark">
+                <div class="container-fluid">
+                    <button type="button" id="sidebarCollapse" class="btn btn-sm btn-info">
+                        <i class="fas fa-align-left"></i>
+                    </button>
+                    <button class="btn btn-dark d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <i class="fas fa-align-justify"></i>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="nav navbar-nav ml-auto">
+                            {% if user.is_authenticated %}
+                            <li class="nav-item active">
+                                 <img class="rounded-circle nav-img"src="{{ user.profile.profile_picture.url }}" alt="">
+                                &nbsp; <span class="text-white">{{user.username|title}}</span>
+                            </li>
+                            {% else %}
+                            <li class="nav-item active">
+                                <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                            </li>
+
+                            <li class="nav-item active">
+                                <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
                 </div>
-                <!-- Navbar Right Side -->
-                <div class="navbar-nav">
-                    {% if user.is_authenticated %}
-                    {% csrf_token %}
-                    
-                        <div class="md-form my-0">
-                            <input class="form-control mr-sm-5" type="text" placeholder="Search" name="searchUser" style="font-weight: bold;"
-                                aria-label="Search">
-                        </div>
-                    </form>
-                    <a href="{%url 'profile'%}">
-                        <i class="fas fa-user text-white h3 ">
-                        </i>
-                    </a>
-                    <a href="{%url 'logout'%}" class="pl-5" style="font-weight: bold;">
-                       Logout
-                    </a>
-                    {% else %}
-                    <a class="nav-item nav-link" href="accounts/login/" style="font-weight: bold;">Login</a>
-                    <a class="nav-item nav-link" href="accounts/register" style="font-weight: bold;">Register</a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </nav>
-</header>
+            </nav>
