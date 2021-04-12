@@ -5,6 +5,8 @@ from cloudinary.models import CloudinaryField
 from django.utils import timezone
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.contrib import admin
+from PIL import Image
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
@@ -26,10 +28,11 @@ class Profile(models.Model):
 
    
 class NeighbourHood(models.Model):
-    name = models.CharField(max_length=50)
-    location = models.CharField(max_length=60)
-    admin = models.ForeignKey("Profile", on_delete=models.CASCADE, related_name='hood')
-    description = models.TextField()
+    name = models.CharField(max_length=255)
+    location = models.CharField(max_length=1000)
+    occupants = models.CharField(max_length=500)
+    image = models.URLField(default='default.png')
+    admin = models.ForeignKey("Profile", on_delete=models.CASCADE, related_name='hoods')
     health_tell = models.IntegerField(null=True, blank=True)
     police_number = models.IntegerField(null=True, blank=True)
 

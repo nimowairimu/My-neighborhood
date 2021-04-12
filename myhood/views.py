@@ -35,14 +35,19 @@ def register(request):
     return render(request, 'users/register.html', params)
 
 
-def hoods(request):
-    all_hoods = NeighbourHood.objects.all()
-    all_hoods = all_hoods[::-1]
-    params = {
-        'all_hoods': all_hoods,
-    }
-    return render(request, 'all_hoods.html', params)
+@login_required()
+def add_hood(request):
+    if request.method == 'POST':
+        form = HoodForm(request.POST or None, request.FILES,)
 
+        if form.is_valid():
+            data = form.save(commit=False)
+            # data.user = request.user.profile
+            data.save()
+            return redirect("main:home")
+    else:
+        form = HoodForm()
+    return render(request, 'main/addhoods.html', {'form': form, "controller":"Add Hood"})
 @login_required(login_url='/accounts/login/')    
 # def profile(request):
 #     if request.method == 'POST':

@@ -22,16 +22,27 @@ class RegistrationForm(UserCreationForm):
             user.save()
         return user  
 
+class NeighbourHoodForm(forms.ModelForm):
+    class Meta:
+        model = NeighbourHood
+        fields = ('name', 'location', 'admin','health_tell', 'police_number' ) 
+
+        widgets = {
+            'image': forms.TextInput(attrs={'placeholder': 'Add image url.... '}),
+        }
+
+        
+
 class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField()
     class Meta:
         model = User
         fields = ['username','email']   
 
-class NeighbourHoodForm(forms.ModelForm):
-    class Meta:
-        model = NeighbourHood
-        fields = ['name','location','description']
+# class NeighbourHoodForm(forms.ModelForm):
+#     class Meta:
+#         model = NeighbourHood
+#         fields = ['name','location','description']
 
 class PostForm(forms.ModelForm):
     class Meta:
