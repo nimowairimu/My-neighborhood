@@ -7,6 +7,10 @@ from .models import NeighbourHood, Profile
 # from .forms import UpdateProfileForm, NeighbourHoodForm, PostForm
 from django.contrib.auth.models import User
 
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .serializer import HoodSerializer, ViewHoodSerializer
+
 
 @login_required(login_url='login')
 def index(request):
@@ -44,10 +48,10 @@ def add_hood(request):
             data = form.save(commit=False)
             # data.user = request.user.profile
             data.save()
-            return redirect("main:home")
+            return redirect("home")
     else:
         form = HoodForm()
-    return render(request, 'main/addhoods.html', {'form': form, "controller":"Add Hood"})
+    return render(request, 'newhoods.html', {'form': form, "controller":"Add Hood"})
 @login_required(login_url='/accounts/login/')    
 # def profile(request):
 #     if request.method == 'POST':
