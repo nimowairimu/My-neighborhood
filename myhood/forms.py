@@ -22,7 +22,7 @@ class RegistrationForm(UserCreationForm):
             user.save()
         return user  
 
- class UserUpdateForm(forms.ModelForm):
+class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField()
     class Meta:
         model = User
