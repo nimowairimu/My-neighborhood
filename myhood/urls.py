@@ -12,4 +12,5 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
     path('profile/<username>/edit/', views.edit_profile, name='edit-profile'),
+    path('new-hood/', views.create_hood, name='new-hood'),
 ]

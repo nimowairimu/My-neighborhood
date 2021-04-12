@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Profile
+from .models import Profile,NeighbourHood
 from cloudinary.models import CloudinaryField
 
 class profileForm(forms.ModelForm):
@@ -27,4 +27,9 @@ class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username','email']   
+
+class NeighbourHoodForm(forms.ModelForm):
+    class Meta:
+        model = NeighbourHood
+        fields = ['name','location','description']
   
