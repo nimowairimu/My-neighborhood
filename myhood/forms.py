@@ -32,4 +32,10 @@ class NeighbourHoodForm(forms.ModelForm):
     class Meta:
         model = NeighbourHood
         fields = ['name','location','description']
+
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ['title', 'post','date']
+
   
