@@ -79,6 +79,8 @@ INSTALLED_APPS = [
     'cloudinary',
     'rest_framework',
     'account',
+    'tinymce',
+    'pyuploadcare.dj',
 ]
 
 MIDDLEWARE = [
