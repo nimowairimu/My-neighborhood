@@ -1,81 +1,117 @@
-from __future__ import unicode_literals
-from django.contrib.auth.models import User
 from django.db import models
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from cloudinary.models import CloudinaryField
-from django.utils import timezone
-from django.dispatch import receiver
-from django.db.models.signals import post_save
-from django.contrib import admin
-from PIL import Image
 
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    name = models.CharField(max_length=80, blank=True)
-    Bio = models.CharField(max_length=30)
-    profilephoto= CloudinaryField('profile photo')
-    location = models.CharField(max_length=50, blank=True, null=True)
-    neighborhood = models.ForeignKey("NeighbourHood", on_delete=models.SET_NULL, null=True, related_name='members', blank=True)
+
+# Create your models here.
+
+class Neighbourhood(models.Model):
+    hoodName = models.CharField(max_length=250)
+    hoodLocation = models.CharField(max_length=250)
+    photo =CloudinaryField('photo', default='photo')
+    # admin = models.ForeignKey('User',on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.user.username} profile'
+        return f'{self.hoodName} neighbourhood'
 
-    
-    def save_profile(self):
-        self.user
 
-    def delete_profile(self):
-        self.delete()    
-
-   
-class NeighbourHood(models.Model):
-    name = models.CharField(max_length=255)
-    location = models.CharField(max_length=1000)
-    occupants = models.CharField(max_length=500)
-    image = models.URLField(default='default.png')
-    admin = models.ForeignKey("Profile", on_delete=models.CASCADE, related_name='hoods')
-    health_tell = models.IntegerField(null=True, blank=True)
-    police_number = models.IntegerField(null=True, blank=True)
-
-    def __str__(self):
-        return f'{self.name} hood'
-
-    def create_neighborhood(self):
+    def save_neighborhood(self):
         self.save()
 
     def delete_neighborhood(self):
         self.delete()
 
-    @classmethod
-    def find_neighborhood(cls, neighborhood_id):
-        return cls.objects.filter(id=neighborhood_id)
+    @property
+    def occupants_count(self):
+        return self.neighbourhood_users.count()
 
-class Post(models.Model):
-    title = models.CharField(max_length=120, null=True)
-    post = models.TextField()
-    date = models.DateTimeField(default=timezone.now)
-    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='post_owner')
-    hood = models.ForeignKey(NeighbourHood, on_delete=models.CASCADE, related_name='hood_post')
 
-class Business(models.Model):
-    name = models.CharField(max_length=120)
-    email = models.EmailField(max_length=254)
-    description = models.TextField(blank=True)
-    neighbourhood = models.ForeignKey(NeighbourHood, on_delete=models.CASCADE, related_name='business')
-    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='owner')
+class UserManager(BaseUserManager):
+    """
+    Override User manager to restrict createsuperuser and createuser from prompting for neighbourhood
+    """
+    pass
+    # def create_user(self, email, password=None):
+
+    #     if email is None:
+    #         raise TypeError('Users must have an email address.')
+
+    #     user = self.model(email=self.normalize_email(email))
+    #     user.set_password(password)
+    #     user.save()
+
+    #     return user
+
+    # def create_superuser(self, email,username, password):
+
+    #     if password is None:
+    #         raise TypeError('Superusers must have a password.')
+    #     user = self.create_user(username, password)
+    #     user.is_superuser = True
+    #     user.is_staff = True
+    #     user.save()
+
+    #     return user
+    
+
+class User(AbstractUser):
+    neighbourhood = models.ForeignKey(
+        Neighbourhood, on_delete=models.CASCADE, related_name='neighbourhood_users', blank=True, null=True)
+    # objects = UserManager()
+
+
+class Profile (models.Model):
+    name = models.CharField(max_length=30)
+    idNo = models.IntegerField(default=0)
+    neighbourhood = models.ForeignKey(Neighbourhood, on_delete=models.CASCADE)
+    emailaddress = models.CharField(max_length=50)
+    status = models.BooleanField()
+    photo =CloudinaryField('profile')
+    user = models.OneToOneField(User,on_delete=models.CASCADE,default='')
 
     def __str__(self):
-        return f'{self.name} Business'
+        return f'{self.user.username} Profile'
 
-    def create_business(self):
+    def save_profile(self):
+        self.save
+    
+    def delete_profile(self):
+        self.delete()
+
+
+class Business(models.Model):
+    businessName = models.CharField(max_length=250)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    neighbourhood = models.ForeignKey(Neighbourhood,on_delete=models.CASCADE)
+    businessEmail = models.CharField(max_length=30)
+    photo = CloudinaryField('businessphoto',default='')
+
+    def __str__(self):
+
+        return f'{self.businessName} business'
+
+    def save_business(self):
         self.save()
 
     def delete_business(self):
         self.delete()
 
-    @classmethod
-    def search_business(cls, name):
-        return cls.objects.filter(name__icontains=name).all()
+class Post(models.Model):
+    title = models.CharField(max_length=100)
+    text = models.TextField()
+    photo = CloudinaryField('postPhoto',default='',null=True,blank=True)
+    user = models.ForeignKey(User,on_delete=models.CASCADE,default = '',null=True,blank=True)
+    date = models.DateField(auto_now_add=True)
+    neighbourhood = models.ForeignKey(Neighbourhood,on_delete=models.CASCADE, default='', null=True, blank=True)
 
 
+    def __str__(self):
+        return f'{self.title} Post'
 
+    def save_post(self):
+        self.save()
+
+    def delete_post(self):
+        self.delete()
+    
 

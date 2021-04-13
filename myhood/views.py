@@ -1,202 +1,162 @@
-from .forms import profileForm,RegistrationForm,UpdateProfileForm,NeighbourHoodForm,PostForm,UserUpdateForm
-from django.http import HttpResponseRedirect
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, authenticate
-from django.contrib.auth.decorators import login_required
-from .models import NeighbourHood, Profile
-# from .forms import UpdateProfileForm, NeighbourHoodForm, PostForm
-from django.contrib.auth.models import User
-
+from django.shortcuts import render,HttpResponse
+from rest_framework import viewsets
+from .serializer import UserSerializer, UserRegistrationSerializer,HoodSerializer,PostSerializer,ProfileSerializer
+from rest_framework import viewsets, permissions
+from rest_framework.decorators import action, permission_classes as permission_decorator
+from rest_framework.permissions import AllowAny
+from .models import Profile,Neighbourhood,Business, User,Post
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializer import HoodSerializer, ViewHoodSerializer
+from rest_framework import mixins
+from rest_framework import status
+from .permissions import IsAdminOrReadOnly
+import json
 
-
-@login_required(login_url='login')
 def index(request):
-     render(request, 'index.html')
+    return render('index.html')
 
-def register(request):
-    if request.method=="POST":
-        form=RegistrationForm(request.POST)
-        procForm=profileForm(request.POST, request.FILES)
-        if form.is_valid() and procForm.is_valid():
-            username=form.cleaned_data.get('username')
-            user=form.save()
-            profile=procForm.save(commit=False)
-            profile.user=user
-            profile.save()
+class IsAssigned(permissions.BasePermission): 
+    """
+    Only person who assigned has permission
+    """
 
-            # messages.success(request, f'Successfully created Account!.You can now login as {username}!')
-        return redirect('login')
+    def has_object_permission(self, request, view, obj):
+		# check if user who launched request is object owner 
+        if obj.assigned_to == request.user: 
+            return True
+
+        return False
+
+class IsReadOnlyOrIsAuthenticated(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        authenticated = request.user.is_authenticated
+        if not authenticated:
+            if view.action == 'hoods':
+                return True
+            else:
+                return False
+        else:
+            return True
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for viewing and editing user instances.
+    """
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+    # permission_classes = permissions.IsAuthenticated
+
+    # @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    # def create(self, request):
+    #     super().create(request)
+    #     # Validating our serializer from the UserRegistrationSerializer
+    #     serializer = UserRegistrationSerializer(data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #     # Everything's valid, so send it to the UserSerializer
+    #     model_serializer = UserSerializer(data=serializer.data)
+    #     model_serializer.is_valid(raise_exception=True)
+    #     model_serializer.save()
+    #     return Response(model_serializer.data)
+
+class HoodList(APIView):
+
+    @permission_decorator([permissions.AllowAny])
+    def get(self,request,format = None):
+        all_hoods = Neighbourhood.objects.all()
+        serializerdata = HoodSerializer(all_hoods,many = True)
+        return Response(serializerdata.data)
+
+class postHood(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request, format=None):
+        serializers = HoodSerializer(data=request.data)
+        if serializers.is_valid():
+            serializers.save()
+            return Response(serializers.data, status=status.HTTP_201_CREATED)
+        return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)     
+
+class HoodViewset(mixins.CreateModelMixin,
+                  mixins.RetrieveModelMixin,
+                  mixins.UpdateModelMixin,
+                  viewsets.GenericViewSet):
+
+    queryset = Neighbourhood.objects.all()
+    serializer_class = HoodSerializer
+    permission_classes = [permissions.AllowAny]
+
+    @action(detail=False, methods=['GET'])
+    @permission_decorator([permissions.AllowAny])
+    def hoods(self, *args, **kwargs):
+        # self.get_permissions = [permissions.AllowAny]
+        queryset = Neighbourhood.objects.all()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @permission_decorator([permissions.AllowAny])
+    @action(detail=False, methods=['GET'])
+    def view_hood(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+    
+
+class PostList(APIView):
+    permission_classes = [permissions.AllowAny]
+    def post(self, request, format=None):
+        serializers = PostSerializer(data=request.data)
+        if serializers.is_valid():
+            serializers.save()
+            return Response(serializers.data, status=status.HTTP_201_CREATED)
+        return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST) 
+
+
+class viewPosts(APIView):
+
+    # @permission_decorator([permissions.AllowAny])
+    def get(self,request,format = None):
+        all_posts = Post.objects.all()
+        serializerdata = PostSerializer(all_posts,many = True)
+        return Response(serializerdata.data)       
+
+class ProfileList(APIView):
+    permission_classes = (IsAdminOrReadOnly,)
+
+
+    def get_profile(self, pk):
+        try:
+            return Profile.objects.get(pk=pk)
+        except Profile.DoesNotExist:
+            return Http404
+
+    def patch(self, request, pk, format=None):
+        profile = self.get_profile(pk)
+        serializers = ProfileSerializer(profile, request.data)
+        if serializers.is_valid():
+            serializers.save()
+            return Response(serializers.data)
+        else:
+            return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# class BusinessViewset(viewsets.ModelViewSet):
+#     queryset = Business.objects.all()
+#     serializer_class = BusinessSerializer
+#     permission_classes = [IsAssigned, permissions.IsAdminUser]
+
+    # def list(self, request, *args, **kwargs):
+    #     self.get_queryset = Business.objects.filter(user=request.user)
+
+    #     if request.user.is_superuser():
+    #         self.get_queryset = Business.objects.all()
+
+    #     super().list(*args, **kwargs)
+
+def check_login(request):
+    if request.user.is_authenticated:
+        return HttpResponse(json.dumps({'result': {'logged': True}, 'user': request.user.username}),
+                        content_type="application/json")
     else:
-        form= RegistrationForm()
-        prof=profileForm()
-    params={
-        'form':form,
-        'profForm': prof
-    }
-    return render(request, 'users/register.html', params)
-
-
-@login_required()
-def add_hood(request):
-    if request.method == 'POST':
-        form = HoodForm(request.POST or None, request.FILES,)
-
-        if form.is_valid():
-            data = form.save(commit=False)
-            # data.user = request.user.profile
-            data.save()
-            return redirect("home")
-    else:
-        form = HoodForm()
-    return render(request, 'newhoods.html', {'form': form, "controller":"Add Hood"})
-@login_required(login_url='/accounts/login/')    
-# def profile(request):
-#     if request.method == 'POST':
-
-#         userForm = UserUpdateForm(request.POST, instance=request.user)
-#         profile_form = profileForm(
-#             request.POST, request.FILES, instance=request.user)
-
-#         if  profile_form.is_valid():
-#             user_form.save()
-#             profile_form.save()
-
-#             return redirect('home')
-
-#     else:
-        
-#         profile_form = profileForm(instance=request.user)
-#         user_form = UserUpdateForm(instance=request.user)
-
-#         params = {
-#             'user_form':user_form,
-#             'profile_form': profile_form
-
-#         }
-
-#     return render(request, 'profile.html', params)
-@login_required(login_url='/accounts/login/')    
-def profile(request):
-    if request.method == 'POST':
-
-        userForm = UserUpdateForm(request.POST, instance=request.user)
-        profile_form = profileForm(
-            request.POST, request.FILES, instance=request.user)
-
-        if  profile_form.is_valid():
-            user_form.save()
-            profile_form.save()
-
-            return redirect('home')
-
-    else:
-        
-        profile_form = profileForm(instance=request.user)
-        user_form = UserUpdateForm(instance=request.user)
-
-        params = {
-            'user_form':user_form,
-            'profile_form': profile_form
-
-        }
-
-    return render(request, 'profile.html', params)
-
-
-
-
-def edit_profile(request, username):
-    user = User.objects.get(username=username)
-    if request.method == 'POST':
-        form = UpdateProfileForm(request.POST, request.FILES, instance=request.user.profile)
-        if form.is_valid():
-            form.save()
-            return redirect('profile', user.username)
-    else:
-        form = UpdateProfileForm(instance=request.user.profile)
-    return render(request, 'editprofile.html', {'form': form})
-
-
-def create_hood(request):
-    if request.method == 'POST':
-        form = NeighbourHoodForm(request.POST, request.FILES)
-        if form.is_valid():
-            hood = form.save(commit=False)
-            hood.admin = request.user.profile
-            hood.save()
-            return redirect('hood')
-    else:
-        form = NeighbourHoodForm()
-    return render(request, 'newhood.html', {'form': form})
-
-def create_post(request, hood_id):
-    hood = NeighbourHood.objects.get(id=hood_id)
-    if request.method == 'POST':
-        form = PostForm(request.POST)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.hood = hood
-            post.user = request.user.profile
-            post.save()
-            # return redirect('single-hood', hood.id)
-    else:
-        form = PostForm()
-    return render(request, 'post.html', {'form': form})
-
-def join_hood(request, id):
-    neighbourhood = get_object_or_404(NeighbourHood, id=id)
-    request.user.profile.neighbourhood = neighbourhood
-    request.user.profile.save()
-    return redirect('hood')
-
-def exit_hood(request, id):
-    hood = get_object_or_404(NeighbourHood, id=id)
-    request.user.profile.neighbourhood = None
-    request.user.profile.save()
-    return redirect('hood')
-
-# def profile(request, username):
-#     return render(request, 'profile.html')
-
-
-def edit_profile(request, username):
-    user = User.objects.get(username=username)
-    if request.method == 'POST':
-        form = UpdateProfileForm(request.POST, request.FILES, instance=request.user.profile)
-        if form.is_valid():
-            form.save()
-            return redirect('profile', user.username)
-    else:
-        form = UpdateProfileForm(instance=request.user.profile)
-    return render(request, 'editprofile.html', {'form': form})
-
-
-def hood_members(request, hood_id):
-    hood = NeighbourHood.objects.get(id=hood_id)
-    members = Profile.objects.filter(neighbourhood=hood)
-    return render(request, 'members.html', {'members': members})
-
-def search_business(request):
-    if request.method == 'GET':
-        name = request.GET.get("title")
-        results = Business.objects.filter(name__icontains=name).all()
-        print(results)
-        message = f'name'
-        params = {
-            'results': results,
-            'message': message
-        }
-        return render(request, 'results.html', params)
-    else:
-        message = "You haven't searched for any image category"
-    return render(request, "results.html")
-
-
-
-
-
-
-
+        return HttpResponse(json.dumps({'result': {'logged': False}}),
+                        content_type="application/json")
