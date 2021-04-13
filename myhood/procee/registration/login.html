@@ -1,20 +1,18 @@
-{% extends 'base.html' %}
+{% extends 'registration/base.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
+
 <div class="container">
     <div class="row">
-        <div class="col-md-6 mx-auto">
-        <div class="panel panel-default card p-5 mt-5 mb-5" style="background-color:#C7DA24;">
-            <h1 style="text-align: center;">Sign In</h1>
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
             <form action="" method="post" novalidate>
                 {% csrf_token %}
                 {{ form|crispy }}
-                <button class="btn btn-sm btn-info">Sign Up</button>
+                <button class="btn btn-sm btn-info">Login</button>
             </form>
         </div>
         <div class="col-md-3"></div>
-    </div>
-    </div>
     </div>
 </div>
 

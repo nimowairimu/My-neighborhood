@@ -1,20 +1,9 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from pyuploadcare.dj.models import ImageField
-#from .models import Profile, NeighbourHood, Business, Post
-from .models import NeighbourHood,Profile,Business,Post,Comment
+from .models import Profile, NeighbourHood, Business, Post
+from pyuploadcare.dj.forms import ImageField
 
-
-class ProfileForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['first_name'].widget = forms.TextInput()
-    
-    class Meta:
-        model = Profile
-        fields = ('profile_picture', 'first_name',
-                  'last_name', 'bio', 'phone', 'email')
 
 class SignupForm(UserCreationForm):
     email = forms.EmailField(max_length=254, help_text='Required. Inform a valid email address.')
@@ -47,16 +36,3 @@ class PostForm(forms.ModelForm):
         model = Post
         exclude = ('user', 'hood')
 
-class CommentForm(forms.ModelForm):
-    class Meta:
-        model = Comment
-        fields = ('comment',)
-
-class CreateHoodForm(forms.ModelForm):
-    class Meta:
-        model = NeighbourHood
-        fields = ['name','location','occupants']
-
-
-
-  

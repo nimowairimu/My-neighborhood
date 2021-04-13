@@ -78,10 +78,18 @@ INSTALLED_APPS = [
     'bootstrap4',
     'cloudinary',
     'rest_framework',
-    'account',
-    'tinymce',
-    'pyuploadcare.dj',
+    # 'account',
+    # 'tinymce',
+    # 'pyuploadcare.dj',
+    'django.contrib.sites',
 ]
+
+SITE_ID = 1
+
+UPLOADCARE = {
+    'pub_key': '2b709bca64245dd9e55e',
+    'secret': '0a60851de5f3db2dc728',
+}
 
 MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -178,9 +186,17 @@ cloudinary.config(
   api_secret = "7jQEu12De26r0srjbzqrxUJMeMw" 
 )
 
-LOGIN_REDIRECT_URL = 'home'
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ],
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning'
+}
 
-LOGOUT_REDIRECT_URL = 'login'
+
+LOGIN_REDIRECT_URL = 'index'
+
+LOGOUT_REDIRECT_URL = 'index'
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
