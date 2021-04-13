@@ -1,23 +1,44 @@
 {% extends 'base.html' %}
-{% load static %}
+
+
 {% block content %}
-<div class="container" >
-    <div class="" style="margin-top:5%; color: black;font-family: Domine; text-align: center;">
-        <h1>Welcome to Pixxiehood</h1>
-        <h2 style="margin-top:6%">Your one stop online application for all neighborhoods</h2>
-        <h5 style="margin-top:6%">Join Your Neighborhood and let us help you get settled in</h5>
-        
-        
-    </div>
-    <div class="col-md-4">
-        <div class="mapouter">
-          <div class="gmap_canvas">
-            <iframe width="350" height="180" id="gmap_canvas" src="https://maps.google.com/maps?q=masaai%20mall&t=&z=15&ie=UTF8&iwloc=&output=embed" frameborder="0" scrolling="no" marginheight="0" marginwidth="0">
-            </iframe>
-          </div>
-          <style>.mapouter{position:relative;text-align:right;height:180px;width:350px;}.gmap_canvas {overflow:hidden;background:none!important;height:180px;width:350px;}</style>
+<div class="container">
+    <div class="jumbotron text-white" style="background-image: url('https://image.freepik.com/free-vector/night-background-with-rental-house_33099-1128.jpg')">
+        <h1 class="display-4 text-center">Welcome to Neighborhood</h1>
+        <h4 class="text-center" style="font-weight:800;">Be always updated with you hood activities and events going on by joining the neighborhood community of your choice</h4>
+        <hr class="my-4">
+      </div>
+      <h2 class="text-center text-white" style="font-weight:800;">Current Hoods</h2>
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                {% for hood in hoods %}
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <img src="{{hood.image}}" alt="" class="img-fluid"  width="260" height="236">
+                            <h3 class="text-center">{{ hood.name }}</h3>
+                            <div class="text-center">
+                                <i class="text-center">Location: {{ hood.location}}</i>
+                            </div>
+                            <div class="text-center">
+                                <i class="text-center">Occupants: {{hood.members.count}}</i>
+                            </div>
+
+                            
+                            <a href="{% url 'main:join-hood' hood.id %}" class="btn btn-primary">Join Hood</a>
+
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
-
 </div>
+
+
 {% endblock %}
+
+
+
